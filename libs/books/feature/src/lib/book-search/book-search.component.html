@@ -10,7 +10,9 @@
 
 <ng-container *ngIf="searchTerm; else empty">
   <div class="book-grid">
-    <div class="book" data-testing="book-item" *ngFor="let b of books; trackBy: trackByBookFn" role="region"
+    <div class="book" data-testing="book-item"
+      *ngFor="let b of books; trackBy: trackByBookFn"
+      role="region"
       [attr.aria-label]="'Book with title' + b.title">
       <div class="book--title">
         {{ b.title }}
@@ -28,7 +30,7 @@
           <p [innerHTML]="b.description"></p>
           <div>
             <button mat-flat-button color="primary" (click)="addBookToReadingList(b)" [disabled]="b.isAdded"
-              [attr.aria-label]="getAriaLabelOfBook(b)">
+              [attr.aria-label]="getAriaLabelOfBook(b)" data-testing="want-to-read">
               Want to Read
             </button>
           </div>
@@ -38,7 +40,7 @@
   </div>
 </ng-container>
 <ng-template #empty>
-  <div class="empty"  role="link">
+  <div class="empty" role="link">
     <p>
       Try searching for a topic, for example "<a (click)="searchExample()">JavaScript</a>".
     </p>

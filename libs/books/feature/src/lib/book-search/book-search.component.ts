@@ -6,9 +6,11 @@ import {
   getAllBooks,
   searchBooks
 } from '@tmo/books/data-access';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { Book } from '@tmo/shared/models';
 import { FormBuilder } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -22,6 +24,14 @@ export class BookSearchComponent implements OnInit {
   searchForm = this.fb.group({
     term: ''
   });
+
+  searchAutoFill$: Observable<string> = this.searchForm.controls.term.valueChanges.pipe(
+    debounceTime(500),
+    distinctUntilChanged(),
+    map(term => {
+      return term;
+    })
+);
 
   constructor(
     private readonly store: Store,
@@ -37,11 +47,7 @@ export class BookSearchComponent implements OnInit {
       this.books = books;
     });
 
-    this.searchForm.controls.term.valueChanges.subscribe(value => {
-      if (!value) {
-        this.store.dispatch(clearSearch());
-      }
-    });
+    this.searchAutoFill$.subscribe(term => this.searchBooks());
   }
 
   formatDate(date: void | string) {

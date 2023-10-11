@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import * as ReadingListActions from './reading-list.actions';
 import {
   initialState,
@@ -11,13 +12,6 @@ describe('Books Reducer', () => {
   describe('valid Books actions', () => {
     let state: State;
 
-    beforeEach(() => {
-      state = readingListAdapter.setAll(
-        [createReadingListItem('A'), createReadingListItem('B')],
-        initialState
-      );
-    });
-
     it('loadBooksSuccess should load books from reading list', () => {
       const list = [
         createReadingListItem('A'),
@@ -28,28 +22,39 @@ describe('Books Reducer', () => {
 
       const result: State = reducer(initialState, action);
 
-      expect(result.loaded).toBe(true);
-      expect(result.ids.length).toEqual(3);
+      expect(result.loaded).to.be.true;
+      expect(result.ids.length).to.eq(3);
     });
 
     it('failedAddToReadingList should undo book addition to the state', () => {
+      
+      state = readingListAdapter.setOne(createReadingListItem('A'),
+        initialState
+      );
+      
       const action = ReadingListActions.failedAddToReadingList({
         book: createBook('B')
       });
 
       const result: State = reducer(state, action);
 
-      expect(result.ids).toEqual(['A']);
+      expect(result.ids).to.eql(['A']);
     });
 
     it('failedRemoveFromReadingList should undo book removal from the state', () => {
+      
+      state = readingListAdapter.setAll(
+        [createReadingListItem('A'), createReadingListItem('B'), createReadingListItem('C')],
+        initialState
+      );
+      
       const action = ReadingListActions.failedRemoveFromReadingList({
         item: createReadingListItem('C')
       });
 
       const result: State = reducer(state, action);
 
-      expect(result.ids).toEqual(['A', 'B', 'C']);
+      expect(result.ids).to.eql(['A', 'B', 'C']);
     });
   });
 
@@ -59,7 +64,7 @@ describe('Books Reducer', () => {
 
       const result = reducer(initialState, action);
 
-      expect(result).toEqual(initialState);
+      expect(result).to.eql(initialState);
     });
   });
 });

@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 import {
+  ReadingListBook,
   addToReadingList,
   clearSearch,
   getAllBooks,
-  ReadingListBook,
   searchBooks
 } from '@tmo/books/data-access';
-import { FormBuilder } from '@angular/forms';
+
 import { Book } from '@tmo/shared/models';
+import { FormBuilder } from '@angular/forms';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'tmo-book-search',
@@ -35,6 +36,12 @@ export class BookSearchComponent implements OnInit {
     this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
     });
+
+    this.searchForm.controls.term.valueChanges.subscribe(value => {
+      if (!value) {
+        this.store.dispatch(clearSearch());
+      }
+    });
   }
 
   formatDate(date: void | string) {
@@ -57,6 +64,19 @@ export class BookSearchComponent implements OnInit {
       this.store.dispatch(searchBooks({ term: this.searchTerm }));
     } else {
       this.store.dispatch(clearSearch());
+    }
+  }
+
+  trackByBookFn(index: number, book: ReadingListBook): (number | string) {
+    return book.id;
+  }
+
+  getAriaLabelOfBook(book: ReadingListBook): string {
+    if (book.isAdded) {
+      return `Book with title ${book.title} is already added!`;
+    }
+    else {
+      return `Want to Read ${book.title}?`;
     }
   }
 }

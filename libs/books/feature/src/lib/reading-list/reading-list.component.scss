@@ -19,6 +19,20 @@
     flex-direction: column;
     justify-content: center;
   }
+
+  .reading-list-btns {
+    flex-direction: row;
+  }
+
+  .finished-text {
+    padding: 4px 6px;
+    max-width: 115px;
+    background-color: $lightGreen;
+    margin: 10px 3px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 5px;
+  }
 }
 
 .reading-list-item--cover {

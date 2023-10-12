@@ -1,6 +1,8 @@
+import { Book, ReadingListItem } from '@tmo/shared/models';
+
+import { BooksController } from './books.controller';
 import { Injectable } from '@nestjs/common';
 import { StorageService } from '@tmo/shared/storage';
-import { Book, ReadingListItem } from '@tmo/shared/models';
 
 const KEY = '[okreads API] Reading List';
 
@@ -26,6 +28,14 @@ export class ReadingListService {
   async removeBook(id: string): Promise<void> {
     this.storage.update(list => {
       return list.filter(x => x.bookId !== id);
+    });
+  }
+
+  async finishBook(id: string, b: Book): Promise<void> {
+    this.storage.update(list => {
+      const index = list.findIndex(x => x.bookId === id);
+      list[index] = {...b, bookId: id};
+      return list;
     });
   }
 }

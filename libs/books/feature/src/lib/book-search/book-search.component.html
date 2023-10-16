@@ -10,9 +10,7 @@
 
 <ng-container *ngIf="searchTerm; else empty">
   <div class="book-grid">
-    <div class="book" data-testing="book-item"
-      *ngFor="let b of books; trackBy: trackByBookFn"
-      role="region"
+    <div class="book" data-testing="book-item" *ngFor="let b of books; trackBy: trackByBookFn" role="region"
       [attr.aria-label]="'Book with title' + b.title">
       <div class="book--title">
         {{ b.title }}
@@ -40,9 +38,9 @@
   </div>
 </ng-container>
 <ng-template #empty>
-  <div class="empty" role="link">
+  <div class="empty">
     <p>
-      Try searching for a topic, for example "<a (click)="searchExample()">JavaScript</a>".
+      Try searching for a topic, for example "<a (click)="searchExample()" (keyup.enter)="searchExample()" tabindex="0">JavaScript</a>".
     </p>
   </div>
 </ng-template>

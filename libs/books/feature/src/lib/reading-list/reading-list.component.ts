@@ -1,8 +1,9 @@
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { addToReadingList, getReadingList, removeFromReadingList } from '@tmo/books/data-access';
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'tmo-reading-list',
@@ -11,6 +12,8 @@ import { Store } from '@ngrx/store';
 })
 export class ReadingListComponent {
   readingList$ = this.store.select(getReadingList);
+
+  private readonly subscription = new Subscription();
 
   constructor(private readonly store: Store, private _snackBar: MatSnackBar) { }
 
@@ -23,8 +26,12 @@ export class ReadingListComponent {
     // config.verticalPosition = 'top';
     const snackBarRef = this._snackBar.open('Removed book from the reading list!', 'Undo', config);
 
-    snackBarRef.onAction().subscribe(() => {
+    this.subscription.add(snackBarRef.onAction().subscribe(() => {
       this.store.dispatch(addToReadingList({ book: { ...item, id: item.bookId } }));
-    });
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

@@ -6,7 +6,7 @@ import {
   getAllBooks,
   searchBooks
 } from '@tmo/books/data-access';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 
 import { Book } from '@tmo/shared/models';
 import { FormBuilder } from '@angular/forms';
@@ -30,7 +30,8 @@ export class BookSearchComponent implements OnInit {
     distinctUntilChanged(),
     map(term => {
       return term;
-    })
+    }),
+    tap(this.searchBooks.bind(this))
 );
 
   constructor(
@@ -86,3 +87,4 @@ export class BookSearchComponent implements OnInit {
     }
   }
 }
+

@@ -1,7 +1,8 @@
-import { Action, createReducer, on } from '@ngrx/store';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-
 import * as ReadingListActions from './reading-list.actions';
+
+import { Action, createReducer, on } from '@ngrx/store';
+import { EntityAdapter, EntityState, createEntityAdapter } from '@ngrx/entity';
+
 import { ReadingListItem } from '@tmo/shared/models';
 
 export const READING_LIST_FEATURE_KEY = 'readingList';
@@ -28,7 +29,7 @@ export const initialState: State = readingListAdapter.getInitialState({
 
 const readingListReducer = createReducer(
   initialState,
-  on(ReadingListActions.init, state => {
+  on(ReadingListActions.loadReadingList, state => {
     return {
       ...state,
       loaded: false,
@@ -52,6 +53,9 @@ const readingListReducer = createReducer(
   ),
   on(ReadingListActions.removeFromReadingList, (state, action) =>
     readingListAdapter.removeOne(action.item.bookId, state)
+  ),
+  on(ReadingListActions.finishBookFromReadingList, (state, action) =>
+    readingListAdapter.updateOne({id: action.item.bookId, changes: action.item}, state)
   )
 );
 

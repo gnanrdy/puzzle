@@ -28,8 +28,8 @@
           <p [innerHTML]="b.description"></p>
           <div>
             <button mat-flat-button color="primary" (click)="addBookToReadingList(b)" [disabled]="b.isAdded"
-              [attr.aria-label]="getAriaLabelOfBook(b)">
-              Want to Read
+              [attr.aria-label]="getAriaLabelOfBook(b)" data-testing="want-to-read">
+              {{b.finished ? 'Finished' : 'Want to Read'}}
             </button>
           </div>
         </div>

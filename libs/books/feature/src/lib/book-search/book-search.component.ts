@@ -1,22 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  ReadingListBook,
   addToReadingList,
   clearSearch,
   getAllBooks,
-  ReadingListBook,
   searchBooks
 } from '@tmo/books/data-access';
-import { FormBuilder } from '@angular/forms';
+
 import { Book } from '@tmo/shared/models';
+import { FormBuilder } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit {
+export class BookSearchComponent implements OnInit, OnDestroy {
   books: ReadingListBook[];
+  private destroyed$: Subject<boolean> = new Subject();
 
   searchForm = this.fb.group({
     term: ''
@@ -35,6 +39,13 @@ export class BookSearchComponent implements OnInit {
     this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
     });
+
+    this.searchForm.controls.term.valueChanges
+      .pipe(takeUntil(this.destroyed$)).subscribe(value => {
+        if (!value) {
+          this.store.dispatch(clearSearch());
+        }
+      });
   }
 
   formatDate(date: void | string) {
@@ -58,5 +69,23 @@ export class BookSearchComponent implements OnInit {
     } else {
       this.store.dispatch(clearSearch());
     }
+  }
+
+  trackByBookFn(index: number, book: ReadingListBook): (number | string) {
+    return book.id;
+  }
+
+  getAriaLabelOfBook(book: ReadingListBook): string {
+    if (book.isAdded) {
+      return `Book with title ${book.title} is already added!`;
+    }
+    else {
+      return `Want to Read ${book.title}?`;
+    }
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }

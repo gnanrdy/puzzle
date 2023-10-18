@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { addToReadingList, getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'tmo-reading-list',
@@ -10,9 +13,25 @@ import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
 export class ReadingListComponent {
   readingList$ = this.store.select(getReadingList);
 
-  constructor(private readonly store: Store) {}
+  private readonly subscription = new Subscription();
+
+  constructor(private readonly store: Store, private _snackBar: MatSnackBar) { }
 
   removeFromReadingList(item) {
     this.store.dispatch(removeFromReadingList({ item }));
+    const config = new MatSnackBarConfig();
+    config.panelClass = ['tmo-snack-bar'];
+    config.duration = 5000;
+    // config.horizontalPosition = 'right'; // Positioning the snackbar in the default position as top-right position is blocking the deletion of other 'My reading list' items
+    // config.verticalPosition = 'top';
+    const snackBarRef = this._snackBar.open('Removed book from the reading list!', 'Undo', config);
+
+    this.subscription.add(snackBarRef.onAction().subscribe(() => {
+      this.store.dispatch(addToReadingList({ book: { ...item, id: item.bookId } }));
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

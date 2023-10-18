@@ -28,7 +28,7 @@
           <p [innerHTML]="b.description"></p>
           <div>
             <button mat-flat-button color="primary" (click)="addBookToReadingList(b)" [disabled]="b.isAdded"
-              [attr.aria-label]="getAriaLabelOfBook(b)">
+              [attr.aria-label]="getAriaLabelOfBook(b)" data-testing="want-to-read">
               Want to Read
             </button>
           </div>

@@ -51,7 +51,8 @@ export class BookSearchComponent implements OnInit, OnDestroy {
       this.books = books;
     });
 
-    this.searchAutoFill$.subscribe(term => this.searchBooks());
+    this.searchAutoFill$
+      .pipe(takeUntil(this.destroyed$)).subscribe(term => this.searchBooks());
     
   }
 
